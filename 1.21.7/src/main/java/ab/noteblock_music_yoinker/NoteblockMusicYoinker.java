@@ -8,7 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.ScreenEvent.KeyPressed;
 import net.minecraftforge.client.event.sound.PlaySoundSourceEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 
@@ -43,9 +43,9 @@ public class NoteblockMusicYoinker
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public void onKeyPress(KeyInputEvent event) {
+    public void onKeyPress(KeyPressed	 event) {
     	// filter for R key down event
-        if(event.getKey() != GLFW.GLFW_KEY_R || event.getAction() != GLFW.GLFW_PRESS) return;
+        if(event.getKeyCode() != GLFW.GLFW_KEY_R) return;
 		is_writing_to_file = !is_writing_to_file;
     	if (is_writing_to_file) {
     		file_to_write = "recorded_music/" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
