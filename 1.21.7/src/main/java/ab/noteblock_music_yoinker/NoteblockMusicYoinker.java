@@ -43,7 +43,7 @@ public class NoteblockMusicYoinker
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public void onKeyPress(KeyPressed	 event) {
+    public void onKeyPress(KeyPressed event) {
     	// filter for R key down event
         if(event.getKeyCode() != GLFW.GLFW_KEY_R) return;
 		is_writing_to_file = !is_writing_to_file;
