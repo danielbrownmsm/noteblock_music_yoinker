@@ -43,6 +43,7 @@ public class NoteblockMusicYoinker {
     private static int time_passed = 0;
     private static boolean is_writing_to_file = false;
     private static String file_to_write;
+    private static FileWriter myWriter;
 
     public NoteblockMusicYoinker() {
         // register ourselves for server and other game events we are interested in
@@ -71,9 +72,24 @@ public class NoteblockMusicYoinker {
                         theDir.mkdirs();
                     }
 
+                    try {
+                        myWriter = new FileWriter(file_to_write, true);
+                    } catch (IOException e) {
+                        LOGGER.error("error writing to file " + file_to_write);
+                        e.printStackTrace();
+                    }
+
                     LOGGER.info("Started recording to file " + file_to_write + ".");
                 } else {
                     time_passed = 0;
+
+                    try {
+                        myWriter.close();
+                    } catch (IOException e) {
+                        LOGGER.error("error writing to file " + file_to_write);
+                        e.printStackTrace();
+                    }
+
                     LOGGER.info("Stopped recording to file " + file_to_write + ".");
                 }
             }
@@ -83,24 +99,24 @@ public class NoteblockMusicYoinker {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onSoundPlayed(PlaySoundSourceEvent event) {
-        String[] felbontott_nev = event.getName().split("[.]");
+        if (!is_writing_to_file) {
+            return;
+        }
+
+        String[] inst_name = event.getName().split("\\.");
 
         // test if the sound is noteblock sound and if we're recording
-        if (!felbontott_nev[0].equals("block") || !felbontott_nev[1].equals("note_block") || !is_writing_to_file) {
+        if (!inst_name[0].equals("wynn") || !inst_name[1].equals("instrument") || !is_writing_to_file) {
             return;
         }
 
         float pitch = event.getSound().getPitch();
         float volume = event.getSound().getVolume();
-        LOGGER.info("Recording " + felbontott_nev[2] + " at time " + time_passed + " with pitch " + pitch
+        LOGGER.info("Recording " + inst_name[2] + " at time " + time_passed + " with pitch " + pitch
                 + " and volume " + volume + ".");
 
         try {
-            // we're opening and closing the file every time we add a line to it,
-            // performance could be improved
-            FileWriter myWriter = new FileWriter(file_to_write, true);
-            myWriter.append(felbontott_nev[2] + "," + time_passed + "," + pitch + "," + volume + "\n");
-            myWriter.close();
+            myWriter.append(inst_name[2] + "," + time_passed + "," + pitch + "," + volume + "\n");
         } catch (IOException e) {
             LOGGER.error("error writing to file " + file_to_write);
             e.printStackTrace();
